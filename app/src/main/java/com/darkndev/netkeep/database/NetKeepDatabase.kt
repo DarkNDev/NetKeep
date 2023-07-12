@@ -1,11 +1,9 @@
 package com.darkndev.netkeep.database
 
 import android.app.Application
-import android.content.Intent
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.darkndev.netkeep.api.RetrieveWorkerReceiver
 import com.darkndev.netkeep.models.Note
 import javax.inject.Inject
 
@@ -19,9 +17,6 @@ abstract class NetKeepDatabase : RoomDatabase() {
     ) : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
-
-            application.sendBroadcast(Intent(application, RetrieveWorkerReceiver::class.java))
-
         }
     }
 }

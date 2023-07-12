@@ -1,17 +1,16 @@
 package com.darkndev.netkeep.utils
 
 import android.os.Build
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import androidx.appcompat.widget.SearchView
-import androidx.work.Constraints
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import com.darkndev.netkeep.api.RetrieveWorker
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
+import java.io.Serializable
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -34,6 +33,12 @@ infix fun Long.isBefore(other: Long) = ZonedDateTime.ofInstant(
 inline fun <T> sdkVersion26AndAbove(onSdkVersion26: () -> T): T? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         onSdkVersion26()
+    } else null
+}
+
+inline fun <T> sdkVersion33AndAbove(onSdkVersion33: () -> T): T? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        onSdkVersion33()
     } else null
 }
 
@@ -73,4 +78,13 @@ inline fun SearchView.onQueryTextChange(crossinline listener: (String?) -> Unit)
         }
     })
 }
+
+inline fun <reified T : Serializable> Bundle.serializable(key: String): T? =
+    sdkVersion33AndAbove {
+        getSerializable(key, T::class.java)
+    } ?: @Suppress("DEPRECATION") getSerializable(key) as? T
+
+inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? = sdkVersion33AndAbove {
+    getParcelable(key, T::class.java)
+} ?: @Suppress("DEPRECATION") getParcelable(key) as? T
 

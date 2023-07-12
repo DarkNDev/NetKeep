@@ -17,4 +17,8 @@
         android:title="Refresh"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/sign_out"
+        android:title="Sign Out" />
+
 </menu>

@@ -6,4 +6,11 @@
     </style>
 
     <style name="Theme.NetKeep" parent="Base.Theme.NetKeep" />
+
+    <style name="Theme.NetKeep.Starting" parent="Theme.SplashScreen">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="windowSplashScreenBackground">@android:color/holo_green_light</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.NetKeep</item>
+    </style>
 </resources>

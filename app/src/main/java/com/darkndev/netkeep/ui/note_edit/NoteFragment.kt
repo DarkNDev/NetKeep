@@ -8,7 +8,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import androidx.core.os.bundleOf
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doAfterTextChanged
@@ -65,10 +64,13 @@ class NoteFragment : Fragment(R.layout.fragment_note_edit), MenuProvider {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.noteEvent.collectLatest {
-                when (it) {
+            viewModel.noteEvent.collectLatest { event ->
+                when (event) {
                     is NoteViewModel.NoteEvent.Navigate -> {
-                        setFragmentResult("SAVED", bundleOf("SAVED" to "Sync Notes?"))
+                        val bundle = Bundle()
+                        bundle.putSerializable("TRANSACTION", event.transaction)
+                        bundle.putParcelable("NOTE", event.note)
+                        setFragmentResult("TRANSACTION", bundle)
                         findNavController().popBackStack()
                     }
 

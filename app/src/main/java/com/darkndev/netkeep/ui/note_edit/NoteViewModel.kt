@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.darkndev.netkeep.database.NoteRepository
 import com.darkndev.netkeep.models.Note
+import com.darkndev.netkeep.utils.user.Transaction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -38,6 +39,7 @@ class NoteViewModel @Inject constructor(
         if (note == null) {
             val insertNote = Note(Random.nextInt(), title, content)
             repository.upsertNotes(listOf(insertNote))
+            noteChannel.send(NoteEvent.Navigate(Transaction.ADD, insertNote))
         } else {
             val updateNote = note.copy(
                 id = note.id,
@@ -45,20 +47,22 @@ class NoteViewModel @Inject constructor(
                 content = content
             )
             repository.upsertNotes(listOf(updateNote))
+            noteChannel.send(NoteEvent.Navigate(Transaction.EDIT, updateNote))
         }
-        noteChannel.send(NoteEvent.Navigate)
     }
 
     fun deleteClicked() = viewModelScope.launch {
-        if (note != null) repository.deleteNote(note)
-        noteChannel.send(NoteEvent.Navigate)
+        if (note != null) {
+            repository.deleteNote(note)
+            noteChannel.send(NoteEvent.Navigate(Transaction.DELETE, note))
+        }
     }
 
     private val noteChannel = Channel<NoteEvent>()
     val noteEvent = noteChannel.receiveAsFlow()
 
     sealed class NoteEvent {
-        object Navigate : NoteEvent()
+        data class Navigate(val transaction: Transaction, val note: Note) : NoteEvent()
         object ShowMessage : NoteEvent()
     }
 }
