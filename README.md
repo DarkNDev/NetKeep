@@ -14,7 +14,19 @@ https://github.com/DarkNDev/NetKeep/assets/49820671/9ad7c456-bb1f-416d-8eea-8d23
 
 
 ### Libraries Used
-Material 3, Navigation Component, Kotlin coroutines, Jetpack Datastore, Lifecycle (ViewModel + LiveData), Dagger Hilt, Work Managers, Broadcast Receivers, Splash Screen Api, Ktor Client with okhttp, Content Negotiation, Kotlin serilization and Client Logging.
+1. Material 3
+2. Navigation Component
+3. Kotlin coroutines
+4. Jetpack Datastore
+5. Lifecycle (ViewModel + LiveData)
+6. Dagger Hilt
+7. Work Managers
+8. Broadcast Receivers
+9. Splash Screen Api
+10. Ktor Client with okhttp
+11. Content Negotiation
+12. Kotlin serilization
+13. Client Logging.
 ### Links
 Authentication usage example -
 1. Server for usage [com.darkndev.ktor-auth](https://github.com/DarkNDev/com.darkndev.ktor-auth)
