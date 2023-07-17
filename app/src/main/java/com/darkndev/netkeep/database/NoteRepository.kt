@@ -11,10 +11,10 @@ import com.darkndev.netkeep.api.NotesApi
 import com.darkndev.netkeep.api.UploadWorker
 import com.darkndev.netkeep.models.AuthRequest
 import com.darkndev.netkeep.models.Note
-import com.darkndev.netkeep.utils.user.AuthResult
 import com.darkndev.netkeep.utils.Constants
-import com.darkndev.netkeep.utils.user.Resource
 import com.darkndev.netkeep.utils.errorMessage
+import com.darkndev.netkeep.utils.user.AuthResult
+import com.darkndev.netkeep.utils.user.Resource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import java.time.Duration
@@ -74,6 +74,7 @@ class NoteRepository @Inject constructor(
     suspend fun signOut() {
         noteDao.deleteAllNotes()
         prefs.updateToken("")
+        stopUpdateWorker()
     }
 
     suspend fun uploadAllNotes(): Resource<String> {
@@ -84,6 +85,11 @@ class NoteRepository @Inject constructor(
         } else {
             Resource.Error(Throwable("No Token Found"))
         }
+    }
+
+    private fun stopUpdateWorker() {
+        WorkManager.getInstance(context)
+            .cancelUniqueWork(Constants.PERIODIC_SYNC_WORKER)
     }
 
     private fun startUpdateWorker() {
