@@ -4,15 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.darkndev.netkeep.database.NoteRepository
-import com.darkndev.netkeep.models.Note
 import com.darkndev.netkeep.utils.NetworkConnectivityObserver
-import com.darkndev.netkeep.utils.Resource
 import com.darkndev.netkeep.utils.errorMessage
 import com.darkndev.netkeep.utils.user.Connection
-import com.darkndev.netkeep.utils.user.Transaction
-import com.darkndev.netkeep.utils.user.Transaction.ADD
-import com.darkndev.netkeep.utils.user.Transaction.DELETE
-import com.darkndev.netkeep.utils.user.Transaction.EDIT
+import com.darkndev.netkeep.utils.user.Event
+import com.darkndev.netkeep.utils.user.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,51 +31,30 @@ class HomeViewModel @Inject constructor(
     val state get() = stateFlow.stateIn(viewModelScope, SharingStarted.Lazily, State.NOT_LOADING)
 
     private val networkState =
-        networkConnectivityObserver.observe().stateIn(viewModelScope, SharingStarted.Lazily, null)
+        networkConnectivityObserver.observe().stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    fun refresh() = viewModelScope.launch {
+    fun updateServerNotes() = viewModelScope.launch {
         stateFlow.value = State.LOADING
         if (networkState.first() == Connection.Available)
-            when (val resource = repository.sync()) {
+            when (val resource = repository.uploadAllNotes()) {
                 is Resource.Error -> {
-                    homeChannel.send(HomeEvent.ShowMessage("Sync Failed: ${errorMessage { resource.error }}"))
+                    homeChannel.send(Event.ShowMessage("Upload Failed: ${errorMessage { resource.error }}"))
                 }
 
                 is Resource.Success -> {
-                    homeChannel.send(HomeEvent.ShowMessage(resource.data!!))
+                    homeChannel.send(Event.ShowMessage(resource.data!!))
                 }
             }
-        stateFlow.value = State.NOT_LOADING
-    }
-
-    fun transaction(transaction: Transaction, note: Note) = viewModelScope.launch {
-        stateFlow.value = State.LOADING
-        if (networkState.first() == Connection.Available) {
-            val status = when (transaction) {
-                ADD -> repository.serverAddNote(note)
-                EDIT -> repository.serverEditNote(note)
-                DELETE -> repository.serverDeleteNote(note)
-            }
-            when (status) {
-                is Resource.Error -> homeChannel.send(HomeEvent.ShowMessage("Sync Failed: ${errorMessage { status.error }}"))
-                is Resource.Success -> homeChannel.send(HomeEvent.ShowMessage(status.data!!))
-            }
-        }
         stateFlow.value = State.NOT_LOADING
     }
 
     fun signOutClicked() = viewModelScope.launch {
         repository.signOut()
-        homeChannel.send(HomeEvent.Navigate)
+        homeChannel.send(Event.Navigate)
     }
 
-    private val homeChannel = Channel<HomeEvent>()
+    private val homeChannel = Channel<Event>()
     val homeEvent = homeChannel.receiveAsFlow()
-
-    sealed class HomeEvent {
-        data class ShowMessage(val message: String) : HomeEvent()
-        object Navigate : HomeEvent()
-    }
 
     enum class State {
         LOADING, NOT_LOADING

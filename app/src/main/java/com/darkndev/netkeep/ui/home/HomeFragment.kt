@@ -10,22 +10,18 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.darkndev.netkeep.R
 import com.darkndev.netkeep.databinding.FragmentHomeBinding
-import com.darkndev.netkeep.models.Note
 import com.darkndev.netkeep.recyclerview.ItemOffsetDecoration
 import com.darkndev.netkeep.recyclerview.NoteAdapter
 import com.darkndev.netkeep.ui.home.HomeViewModel.State.LOADING
 import com.darkndev.netkeep.ui.home.HomeViewModel.State.NOT_LOADING
 import com.darkndev.netkeep.utils.onQueryTextChange
-import com.darkndev.netkeep.utils.parcelable
-import com.darkndev.netkeep.utils.serializable
-import com.darkndev.netkeep.utils.user.Transaction
+import com.darkndev.netkeep.utils.user.Event
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Runnable
@@ -88,11 +84,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), MenuProvider {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.homeEvent.collectLatest {
                 when (it) {
-                    is HomeViewModel.HomeEvent.ShowMessage -> {
+                    is Event.ShowMessage -> {
                         Snackbar.make(view, it.message, Snackbar.LENGTH_SHORT).show()
                     }
 
-                    is HomeViewModel.HomeEvent.Navigate -> {
+                    is Event.Navigate -> {
                         val action = HomeFragmentDirections.actionHomeFragmentToSignInFragment()
                         findNavController().navigate(action)
                     }
@@ -106,13 +102,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), MenuProvider {
                     binding.recyclerView.scrollToPosition(0)
                 }
             }
-        }
-
-        setFragmentResultListener("TRANSACTION") { _, bundle ->
-            val transaction =
-                bundle.serializable<Transaction>("TRANSACTION") ?: return@setFragmentResultListener
-            val note = bundle.parcelable<Note>("NOTE") ?: return@setFragmentResultListener
-            viewModel.transaction(transaction, note)
         }
     }
 
@@ -137,7 +126,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), MenuProvider {
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.action_refresh -> {
-            viewModel.refresh()
+            viewModel.updateServerNotes()
             true
         }
 

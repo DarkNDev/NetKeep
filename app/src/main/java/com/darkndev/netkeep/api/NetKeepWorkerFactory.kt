@@ -5,11 +5,13 @@ import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.darkndev.netkeep.database.NoteDao
+import com.darkndev.netkeep.database.PreferencesManager
 import javax.inject.Inject
 
 class NetKeepWorkerFactory @Inject constructor(
     private val notesApi: NotesApi,
-    private val noteDao: NoteDao
+    private val noteDao: NoteDao,
+    private val prefs: PreferencesManager
 ) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,
@@ -17,17 +19,12 @@ class NetKeepWorkerFactory @Inject constructor(
         workerParameters: WorkerParameters
     ): ListenableWorker? =
         when (workerClassName) {
-            SyncWorker::class.java.name -> SyncWorker(
-                appContext,
-                workerParameters,
-                notesApi
-            )
-
-            RetrieveWorker::class.java.name -> RetrieveWorker(
+            UploadWorker::class.java.name -> UploadWorker(
                 appContext,
                 workerParameters,
                 notesApi,
-                noteDao
+                noteDao,
+                prefs
             )
 
             else -> null

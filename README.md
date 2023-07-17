@@ -1,5 +1,5 @@
 # NetKeep
-Android client app for notes-api with user authetication
+Android client app for notes-api with user authentication
 ### Usage
 1. Signing in if user exists or creating new user.
 2. The server generates a unique token for user signed in and stores it in shared preferences for making network calls.
@@ -25,7 +25,7 @@ https://github.com/DarkNDev/NetKeep/assets/49820671/9ad7c456-bb1f-416d-8eea-8d23
 9. Splash Screen Api
 10. Ktor Client with okhttp
 11. Content Negotiation
-12. Kotlin serilization
+12. Kotlin serialization
 13. Client Logging.
 ### Links
 Authentication usage example -

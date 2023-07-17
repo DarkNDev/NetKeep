@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.darkndev.netkeep.databinding.FragmentSignInBinding
-import com.darkndev.netkeep.utils.AuthResult
+import com.darkndev.netkeep.utils.user.Event
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -62,37 +62,29 @@ class SignInFragment : Fragment() {
                         true -> progress.show()
                         false -> progress.hide()
                     }
+                    createAccount.isEnabled = !it
+                    signIn.isEnabled = !it
+                    signInUsernameLayout.isEnabled = !it
+                    signInPasswordLayout.isEnabled = !it
                 }
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.authResults.collectLatest {
+            viewModel.signingEvent.collectLatest {
                 when (it) {
-                    is AuthResult.Authorized -> {
+                    is Event.Navigate -> {
                         val action =
                             SignInFragmentDirections.actionSignInFragmentToHomeFragment()
                         findNavController().navigate(action)
                     }
 
-                    is AuthResult.Unauthorized -> {
-                        it.data?.let { message ->
-                            Snackbar.make(
-                                binding.root,
-                                message,
-                                Snackbar.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-
-                    is AuthResult.UnknownError -> {
-                        it.data?.let { message ->
-                            Snackbar.make(
-                                binding.root,
-                                message,
-                                Snackbar.LENGTH_SHORT
-                            ).show()
-                        }
+                    is Event.ShowMessage -> {
+                        Snackbar.make(
+                            binding.root,
+                            it.message,
+                            Snackbar.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }

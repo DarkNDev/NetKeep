@@ -33,9 +33,6 @@
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove" />
 
-        <receiver android:name=".api.RetrieveWorkerReceiver" />
-        <receiver android:name=".api.SyncWorkerReceiver" />
-
     </application>
 
 </manifest>

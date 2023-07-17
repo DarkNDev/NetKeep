@@ -7,8 +7,5 @@ object Urls {
     const val SIGN_IN = "$BASE_URL/signin"
 
     const val ALL_NOTES = "$BASE_URL/notes"
-    const val SYNC = "$BASE_URL/sync"
-    const val ADD = "$BASE_URL/add"
-    const val EDIT = "$BASE_URL/edit"
-    const val DELETE = "$BASE_URL/delete"
+    const val UPDATE = "$BASE_URL/update"
 }

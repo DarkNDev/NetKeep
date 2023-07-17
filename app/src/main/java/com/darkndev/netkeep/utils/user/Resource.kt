@@ -1,4 +1,4 @@
-package com.darkndev.netkeep.utils
+package com.darkndev.netkeep.utils.user
 
 sealed class Resource<T>(
     val data: T? = null,

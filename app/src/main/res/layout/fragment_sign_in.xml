@@ -12,6 +12,7 @@
         android:indeterminate="true" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/sign_in_username_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/sign_in_password_layout"

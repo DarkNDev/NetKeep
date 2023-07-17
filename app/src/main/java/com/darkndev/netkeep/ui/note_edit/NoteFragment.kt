@@ -12,13 +12,13 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.darkndev.netkeep.R
 import com.darkndev.netkeep.databinding.FragmentNoteEditBinding
+import com.darkndev.netkeep.utils.user.Event
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -66,16 +66,12 @@ class NoteFragment : Fragment(R.layout.fragment_note_edit), MenuProvider {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.noteEvent.collectLatest { event ->
                 when (event) {
-                    is NoteViewModel.NoteEvent.Navigate -> {
-                        val bundle = Bundle()
-                        bundle.putSerializable("TRANSACTION", event.transaction)
-                        bundle.putParcelable("NOTE", event.note)
-                        setFragmentResult("TRANSACTION", bundle)
+                    is Event.Navigate -> {
                         findNavController().popBackStack()
                     }
 
-                    is NoteViewModel.NoteEvent.ShowMessage -> {
-                        Snackbar.make(view, "Check Fields", Snackbar.LENGTH_SHORT).show()
+                    is Event.ShowMessage -> {
+                        Snackbar.make(view, event.message, Snackbar.LENGTH_SHORT).show()
                     }
                 }
             }
