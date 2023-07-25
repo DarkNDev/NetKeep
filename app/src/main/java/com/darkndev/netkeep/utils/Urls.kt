@@ -1,7 +1,9 @@
 package com.darkndev.netkeep.utils
 
+import com.darkndev.netkeep.BuildConfig
+
 object Urls {
-    private const val BASE_URL = "http://192.168.1.10:8080"
+    private const val BASE_URL = BuildConfig.BASE_URL
 
     const val SIGN_UP = "$BASE_URL/signup"
     const val SIGN_IN = "$BASE_URL/signin"
