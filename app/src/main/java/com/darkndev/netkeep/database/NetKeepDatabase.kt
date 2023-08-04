@@ -7,7 +7,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.darkndev.netkeep.models.Note
 import javax.inject.Inject
 
-@Database(entities = [Note::class], version = 1)
+@Database(entities = [Note::class], version = 1, exportSchema = false)
 abstract class NetKeepDatabase : RoomDatabase() {
 
     abstract fun noteDao(): NoteDao
